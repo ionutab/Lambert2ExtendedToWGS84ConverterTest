@@ -2,6 +2,7 @@ package oApfloatRefactored;
 
 
 import static oApfloatRefactored.LambertZone.*;
+
 import org.apfloat.Apfloat;
 import org.apfloat.ApfloatMath;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -56,8 +57,10 @@ public class Lambert {
         Apfloat elt12 = lat.divide(new Apfloat("2.0", PREC));
         Apfloat elt1 = ApfloatMath.tan(elt11.add(elt12));
 
-        Apfloat elt21 = e.add(ApfloatMath.sin(lat));
-        Apfloat elt2 = ApfloatMath.pow(Apfloat.ONE.subtract(elt11).divide(Apfloat.ONE.add(elt21)), e.divide(new Apfloat("2.0", PREC)));
+        Apfloat elt21 = e.multiply(ApfloatMath.sin(lat));
+        Apfloat elt2 = ApfloatMath.pow(
+                Apfloat.ONE.subtract(elt21).divide(Apfloat.ONE.add(elt21)),
+                e.divide(new Apfloat("2.0", PREC)));
 
         return ApfloatMath.log(elt1.multiply(elt2));
     }
@@ -76,9 +79,9 @@ public class Lambert {
         Apfloat phiIPowA = Apfloat.ONE.add(eSinPhi0).divide(Apfloat.ONE.subtract(eSinPhi0));
 
         Apfloat phiI = two.multiply(
-            ApfloatMath.atan(
-                ApfloatMath.pow(phiIPowA, e.divide(two)).multiply(ApfloatMath.exp(latISo))
-            )).subtract(aM_PI_2);
+                ApfloatMath.atan(
+                        ApfloatMath.pow(phiIPowA, e.divide(two)).multiply(ApfloatMath.exp(latISo))
+                )).subtract(aM_PI_2);
         //double phiI = 2 * atan(pow((1 + e * sin(phi0)) / (1 - e * sin(phi0)), e / 2d) * exp(latISo)) - M_PI_2;
         Apfloat delta = ApfloatMath.abs(phiI.subtract(phi0));
 
@@ -89,8 +92,8 @@ public class Lambert {
             phiIPowA = Apfloat.ONE.add(eSinPhi0).divide(Apfloat.ONE.subtract(eSinPhi0));
 
             phiI = two.multiply(
-                ApfloatMath.atan(ApfloatMath.pow(phiIPowA, e.divide(two)).multiply(ApfloatMath.exp(latISo))
-                )).subtract(aM_PI_2);
+                    ApfloatMath.atan(ApfloatMath.pow(phiIPowA, e.divide(two)).multiply(ApfloatMath.exp(latISo))
+                    )).subtract(aM_PI_2);
             //phiI = 2 * atan(pow((1 + e * sin(phi0)) / (1 - e * sin(phi0)), e / 2d) * exp(latISo)) - M_PI_2;
             delta = ApfloatMath.abs(phiI.subtract(phi0));
         }
@@ -116,8 +119,7 @@ public class Lambert {
         Apfloat nLon = n.multiply(longitude.subtract(lonMeridian));
 
         Apfloat x = xs.add(C.multiply(eLatIso).multiply(ApfloatMath.sin(nLon)));
-        ys.add(C.multiply(eLatIso).multiply(ApfloatMath.cos(nLon)));
-        Apfloat y = ys.add(C.multiply(eLatIso).multiply(ApfloatMath.cos(nLon)));
+        Apfloat y = ys.subtract(C.multiply(eLatIso).multiply(ApfloatMath.cos(nLon)));
 
         return new LambertPoint(x, y, Apfloat.ZERO);
     }
@@ -234,11 +236,11 @@ public class Lambert {
      */
     private static LambertPoint cartesianToGeographic(LambertPoint org, double meridien, double a, double e, double eps) {
         return cartesianToGeographic(
-            org,
-            new Apfloat(Double.valueOf(meridien), PREC),
-            new Apfloat(Double.valueOf(a), PREC),
-            new Apfloat(Double.valueOf(e), PREC),
-            new Apfloat(Double.valueOf(eps), PREC)
+                org,
+                new Apfloat(Double.valueOf(meridien), PREC),
+                new Apfloat(Double.valueOf(a), PREC),
+                new Apfloat(Double.valueOf(e), PREC),
+                new Apfloat(Double.valueOf(eps), PREC)
         );
     }
 
@@ -255,7 +257,7 @@ public class Lambert {
         Apfloat module = ApfloatMath.sqrt(x2.add(y2));
 
         Apfloat phi0 = ApfloatMath.atan(
-            z.divide(module.multiply(Apfloat.ONE.subtract(a.multiply(e2).divide(ApfloatMath.sqrt(x2.add(y2).add(z2))))))
+                z.divide(module.multiply(Apfloat.ONE.subtract(a.multiply(e2).divide(ApfloatMath.sqrt(x2.add(y2).add(z2))))))
         );
 
         Apfloat cosPhi0 = ApfloatMath.cos(phi0);
@@ -278,7 +280,10 @@ public class Lambert {
         }
 
         Apfloat sinPhiI = ApfloatMath.sin(phiI);
-        Apfloat he = module.divide(ApfloatMath.cos(phiI)).subtract(a.divide(ApfloatMath.sqrt(Apfloat.ONE.subtract(e2.multiply(sinPhiI).multiply(sinPhiI)))));
+        Apfloat he = module.divide(ApfloatMath.cos(phiI));
+        he = he.subtract(
+                        a.divide(ApfloatMath.sqrt(Apfloat.ONE.subtract(e2.multiply(sinPhiI).multiply(sinPhiI))))
+                );
 
         return new LambertPoint(lon, phiI, he);
     }
@@ -299,9 +304,9 @@ public class Lambert {
             LambertPoint pt2 = geographicToCartesian(pt1.getX(), pt1.getY(), pt1.getZ(), A_CLARK_IGN, E_CLARK_IGN);
 
             pt2.translate(
-                new Apfloat(Integer.toString(168)).negate(),
-                new Apfloat(Integer.toString(60)).negate(),
-                new Apfloat(Integer.toString(320))
+                    new Apfloat(Integer.toString(168)).negate(),
+                    new Apfloat(Integer.toString(60)).negate(),
+                    new Apfloat(Integer.toString(320))
             );
 
             //WGS84 refers to greenwich

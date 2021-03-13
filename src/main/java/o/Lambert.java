@@ -44,8 +44,8 @@ http://geodesie.ign.fr/contenu/fichiers/documentation/pedagogiques/Transformatio
 public class Lambert {
 
     /*
-    *   ALGO0001
-    */
+     *   ALGO0001
+     */
     public static double latitudeISOFromLat(double lat, double e) {
         double elt11 = Math.PI / 4d;
         double elt12 = lat / 2d;
@@ -59,8 +59,8 @@ public class Lambert {
 
 
     /*
-    *   ALGO0002
-    */
+     *   ALGO0002
+     */
     private static double latitudeFromLatitudeISO(double latISo, double e, double eps) {
 
         double phi0 = 2 * atan(exp(latISo)) - M_PI_2;
@@ -78,8 +78,8 @@ public class Lambert {
 
 
     /*
-   *   ALGO0003
-   */
+     *   ALGO0003
+     */
     public static LambertPoint geographicToLambertAlg003(double latitude, double longitude, LambertZone zone, double lonMeridian, double e) {
 
         double n = zone.n();
@@ -100,9 +100,9 @@ public class Lambert {
     }
 
     /*
-   *  http://geodesie.ign.fr/contenu/fichiers/documentation/pedagogiques/TransformationsCoordonneesGeodesiques.pdf
-   *  3.4 Coordonnées géographiques Lambert
-   */
+     *  http://geodesie.ign.fr/contenu/fichiers/documentation/pedagogiques/TransformationsCoordonneesGeodesiques.pdf
+     *  3.4 Coordonnées géographiques Lambert
+     */
     public static LambertPoint geographicToLambert(double latitude, double longitude, LambertZone zone, double lonMeridian, double e) {
 
         double n = zone.n();
@@ -127,9 +127,9 @@ public class Lambert {
         return new LambertPoint(x, y, 0);
     }
 
-/*
-*	ALGO0004 - Lambert vers geographiques
-*/
+    /*
+     *	ALGO0004 - Lambert vers geographiques
+     */
 
     public static LambertPoint lambertToGeographic(LambertPoint org, LambertZone zone, double lonMeridian, double e, double eps) {
         double n = zone.n();
@@ -155,10 +155,10 @@ public class Lambert {
         return new LambertPoint(lon, lat, 0);
     }
 
- /*
- * ALGO0021 - Calcul de la grande Normale
- *
-*/
+    /*
+     * ALGO0021 - Calcul de la grande Normale
+     *
+     */
 
     private static double lambertNormal(double lat, double a, double e) {
 
@@ -184,8 +184,8 @@ public class Lambert {
     }
 
     /*
- * ALGO0012 - Passage des coordonnées cartésiennes aux coordonnées géographiques
- */
+     * ALGO0012 - Passage des coordonnées cartésiennes aux coordonnées géographiques
+     */
 
     private static LambertPoint cartesianToGeographic(LambertPoint org, double meridien, double a, double e, double eps) {
         double x = org.getX(), y = org.getY(), z = org.getZ();
@@ -201,19 +201,19 @@ public class Lambert {
             phi0 = phiI;
             phiI = atan(z / module / (1 - a * e * e * cos(phi0) / (module * sqrt(1 - e * e * sin(phi0) * sin(phi0)))));
             delta = abs(phiI - phi0);
-
         }
 
-        double he = module / cos(phiI) - a / sqrt(1 - e * e * sin(phiI) * sin(phiI));
+        double he = module / cos(phiI);
+        he = he - a / sqrt(1 - e * e * sin(phiI) * sin(phiI));
 
         return new LambertPoint(lon, phiI, he);
     }
 
-     /*
- * Convert Lambert -> WGS84
- * http://geodesie.ign.fr/contenu/fichiers/documentation/pedagogiques/transfo.pdf
- *
- */
+    /*
+     * Convert Lambert -> WGS84
+     * http://geodesie.ign.fr/contenu/fichiers/documentation/pedagogiques/transfo.pdf
+     *
+     */
 
     public static LambertPoint convertToWGS84(LambertPoint org, LambertZone zone) {
 
@@ -231,11 +231,11 @@ public class Lambert {
         }
     }
 
-     /*
- * Convert WGS84 -> Lambert
- * http://geodesie.ign.fr/contenu/fichiers/documentation/pedagogiques/transfo.pdf
- *
- */
+    /*
+     * Convert WGS84 -> Lambert
+     * http://geodesie.ign.fr/contenu/fichiers/documentation/pedagogiques/transfo.pdf
+     *
+     */
 
     public static LambertPoint convertToLambert(double latitude, double longitude, LambertZone zone) throws NotImplementedException {
 
